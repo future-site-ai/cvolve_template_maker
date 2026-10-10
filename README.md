@@ -107,6 +107,10 @@ assets/controllers/  studio (CodeMirror 6, autosave, preview), design-chat, …
 
 Shared from CVolve's kit (`Cvolve\TemplateKit`): `TemplateSandbox`, `TemplatePackageReader`/`Writer`, `DocumentRenderer`, `SampleCv`, `TemplateImporter` (all formats), `TemplateAi` (convert, generate, edit with validation and repair), `Prompts`.
 
+## 🤝 Contributing
+
+Contributions are welcome! Bug reports, ideas, docs and code all help. Read **[CONTRIBUTING.md](CONTRIBUTING.md)** to get started, and look for issues labelled [`good first issue`](https://github.com/future-site-ai/cvolve_template_maker/labels/good%20first%20issue).
+
 ## 📄 License
 
 CVolve Template Maker is open source under the [MIT License](LICENSE), © Future Site Di Haidar Anbar. You are free to use, modify, and distribute it, including commercially, as long as the copyright and license notice are kept.
