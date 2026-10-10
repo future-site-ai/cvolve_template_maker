@@ -19,6 +19,14 @@ A web studio for designers to create CV templates for **[CVolve](https://github.
 
 ![The template studio: code editor, live A4 preview and the AI design assistant proposing a change](docs/screenshots/studio-ai-assistant.jpg)
 
+## 🎬 Videos
+
+<!-- After creating the playlist: replace PLAYLIST_ID with the ID of the CVolve Template Maker playlist (https://www.youtube.com/playlist?list=PLAYLIST_ID).
+     To show a different video here, replace Cga3joSNlAE (twice) with that video's ID. -->
+[![Watch the CVolve Template Maker demo on YouTube](https://img.youtube.com/vi/Cga3joSNlAE/maxresdefault.jpg)](https://www.youtube.com/watch?v=Cga3joSNlAE)
+
+▶️ **[All CVolve Template Maker videos on YouTube](https://www.youtube.com/playlist?list=PLWlfH2pbHfzg)**: demos, guides and updates.
+
 ## 📸 Screenshots
 
 | My templates | Mustache HTML in the studio (long sample CV) |
