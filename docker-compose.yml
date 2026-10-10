@@ -1,0 +1,47 @@
+# CVolve Template Maker — `docker compose up -d --build`, then open http://localhost:8090
+# The build needs the sibling ../cvolve checkout (shared template kit).
+name: cvolve-maker
+
+x-env: &env
+  env_file:
+    - path: docker/defaults.env
+    - path: .env.docker
+      required: false
+
+services:
+  app:
+    <<: *env
+    build:
+      context: ..
+      dockerfile: cvolve_template_maker/docker/Dockerfile
+    image: cvolve-template-maker
+    ports:
+      - "${MAKER_PORT:-8090}:80"
+    depends_on:
+      database:
+        condition: service_healthy
+      gotenberg:
+        condition: service_started
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+  database:
+    <<: *env
+    image: postgres:16-alpine
+    volumes:
+      - database:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  gotenberg:
+    image: gotenberg/gotenberg:8
+    command: ["gotenberg", "--chromium-deny-list=^(?!data:|file:///tmp/).*", "--api-timeout=90s"]
+    restart: unless-stopped
+
+volumes:
+  database:

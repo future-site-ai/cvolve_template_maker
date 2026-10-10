@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Template Maker{% endblock %} · CVolve Template Maker</title>
+    <meta name="description" content="Design, convert and AI-generate CV templates for CVolve.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%230f766e%22/><text x=%2216%22 y=%2222%22 font-size=%2215%22 font-family=%22Arial%22 font-weight=%22bold%22 text-anchor=%22middle%22 fill=%22white%22>Tm</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>try{var t=localStorage.getItem('cvolve-theme');if(t&&t!=='system')document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+    {% block javascripts %}{% block importmap %}{{ importmap('app') }}{% endblock %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+    <header class="topbar">
+        <a class="brand" href="{{ path(app.user ? 'project_index' : 'app_home') }}"><span class="brand-mark" style="background:linear-gradient(135deg,#0f766e,#4f46e5)">Tm</span> Template Maker</a>
+        {% set route = app.request.attributes.get('_route') %}
+        <nav class="nav">
+            {% if app.user %}
+                <a href="{{ path('project_index') }}" class="{{ route starts with 'project' ? 'active' }}">My templates</a>
+                <a href="{{ path('ai_index') }}" class="{{ route starts with 'ai_' ? 'active' }}">AI connections</a>
+            {% endif %}
+            <a href="{{ path('app_docs') }}" class="{{ route == 'app_docs' ? 'active' }}">Docs</a>
+        </nav>
+        <div class="topbar-right">
+            <button type="button" class="btn btn-ghost btn-icon" data-controller="theme" data-action="theme#toggle" aria-label="Switch theme">◐</button>
+            {% if app.user %}
+                <span class="small muted">{{ app.user.name }}</span>
+                <a class="btn btn-ghost btn-sm" href="{{ path('app_logout') }}">Log out</a>
+            {% else %}
+                <a class="btn btn-ghost btn-sm" href="{{ path('app_login') }}">Log in</a>
+                <a class="btn btn-primary btn-sm" href="{{ path('app_register') }}">Sign up</a>
+            {% endif %}
+        </div>
+    </header>
+    {% block main %}
+        <main class="{% block container_class %}container{% endblock %}">
+            {{ include('_flashes.html.twig') }}
+            {% block body %}{% endblock %}
+        </main>
+    {% endblock %}
+</body>
+</html>

@@ -1,0 +1,10 @@
+{% set flashes = app.flashes %}
+{% if flashes|length %}
+    <div class="flashes" role="status">
+        {% for type, messages in flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ type }}">{{ message }}</div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+{% endif %}

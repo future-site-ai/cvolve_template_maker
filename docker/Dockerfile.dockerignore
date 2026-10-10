@@ -1,0 +1,10 @@
+# Build context is the parent folder: send only the maker and the shared template kit
+*
+!cvolve_template_maker
+!cvolve/packages/template-kit
+cvolve_template_maker/var
+cvolve_template_maker/vendor
+cvolve_template_maker/public/assets
+cvolve_template_maker/assets/vendor
+cvolve_template_maker/.env.local
+cvolve_template_maker/.env.docker

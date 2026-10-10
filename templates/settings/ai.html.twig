@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+{% block title %}AI connections{% endblock %}
+{% block body %}
+    <div class="page-head">
+        <div><h1>AI connections</h1><p>Use your own AI accounts. Keys are encrypted at rest, never shown again, and only sent to the provider you choose.</p></div>
+        <a class="btn btn-primary" href="{{ path('ai_new') }}">+ Add connection</a>
+    </div>
+    {% if connections is empty %}
+        <div class="card empty">
+            <h2>No connections yet</h2>
+            <p>Add Anthropic (Claude), OpenAI (ChatGPT), Google Gemini, Mistral, DeepSeek, xAI, a local Ollama, or any OpenAI-compatible API such as OpenRouter or Groq.</p>
+            <a class="btn btn-primary" href="{{ path('ai_new') }}">Add a connection</a>
+        </div>
+    {% else %}
+        <div class="card table-wrap">
+            <table class="table">
+                <thead><tr><th>Connection</th><th>Model</th><th>Key</th><th>Status</th><th></th></tr></thead>
+                <tbody>
+                    {% for c in connections %}
+                        {% set token = csrf_token('ai-' ~ c.id) %}
+                        <tr>
+                            <td><strong>{{ c.label }}</strong>{% if c.default %} <span class="badge badge-primary">default</span>{% endif %}<br><span class="small muted">{{ c.providerName }}{% if c.baseUrl %} · {{ c.baseUrl }}{% endif %}</span></td>
+                            <td><code>{{ c.model }}</code></td>
+                            <td><code>{{ c.keyHint ?? '—' }}</code></td>
+                            <td>
+                                {% if c.lastTestedAt is null %}<span class="badge">not tested</span>
+                                {% elseif c.lastError %}<span class="badge badge-danger" title="{{ c.lastError }}">failed</span>
+                                {% else %}<span class="badge badge-success">works</span>{% endif %}
+                            </td>
+                            <td class="nowrap" style="text-align:right">
+                                {% for action, label in {test: 'Test', default: 'Make default', delete: 'Delete'} %}
+                                    {% if not (action == 'default' and c.default) %}
+                                        <form method="post" action="{{ path('ai_action', {id: c.id, action: action}) }}" class="inline" {% if action == 'delete' %}onsubmit="return confirm('Delete this connection?')"{% endif %}>
+                                            <input type="hidden" name="_token" value="{{ token }}"><button class="btn btn-sm {{ action == 'delete' ? 'btn-danger' }}">{{ label }}</button>
+                                        </form>
+                                    {% endif %}
+                                {% endfor %}
+                                <a class="btn btn-sm" href="{{ path('ai_edit', {id: c.id}) }}">Edit</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <p class="small muted" style="margin-top:12px">Template work needs a strong model: Claude Sonnet/Opus, GPT-4o or newer, Gemini 2.5 Pro and similar give the best results. Small local models often fail validation.</p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ connection ? 'Edit' : 'Add' }} AI connection{% endblock %}
+{% block container_class %}container-narrow{% endblock %}
+{% block body %}
+    <div class="card">
+        <h1>{{ connection ? 'Edit' : 'Add' }} AI connection</h1>
+        {% if errors %}<div class="alert alert-error" style="margin-bottom:14px">{% for e in errors %}<div>{{ e }}</div>{% endfor %}</div>{% endif %}
+        <form method="post" data-controller="provider">
+            <input type="hidden" name="_token" value="{{ csrf_token('ai-connection') }}">
+            <div class="form-row">
+                <label for="provider">Provider</label>
+                <select name="provider" id="provider" data-provider-target="provider" data-action="provider#change">
+                    {% for key, p in providers %}<option value="{{ key }}" data-model="{{ p[1] }}" data-needs-key="{{ p[2] ? 1 : 0 }}" {{ (connection ? connection.provider : 'anthropic') == key ? 'selected' }}>{{ p[0] }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="form-row"><label for="label">Label</label><input type="text" name="label" id="label" value="{{ connection ? connection.label }}" placeholder="e.g. My Claude"></div>
+            <div class="form-row"><label for="model">Model</label><input type="text" name="model" id="model" value="{{ connection ? connection.model }}" data-provider-target="model"><div class="form-help">Leave empty for the suggested default.</div></div>
+            <div class="form-row" data-provider-target="keyRow"><label for="api_key">API key</label><input type="password" name="api_key" id="api_key" autocomplete="off" placeholder="{{ connection and connection.keyHint ? 'Saved (' ~ connection.keyHint ~ '); leave empty to keep it' : 'sk-…' }}"></div>
+            <div class="form-row"><label for="base_url">Base URL <span class="muted">(Ollama / OpenAI-compatible only)</span></label><input type="url" name="base_url" id="base_url" value="{{ connection ? connection.baseUrl }}" placeholder="https://openrouter.ai/api/v1"></div>
+            {% if not connection %}<label class="checkbox-row form-row"><input type="checkbox" name="default" value="1"> <span>Use as my default connection</span></label>{% endif %}
+            <div class="form-actions"><a class="btn btn-ghost" href="{{ path('ai_index') }}">Cancel</a><button class="btn btn-primary">Save</button></div>
+        </form>
+    </div>
+{% endblock %}

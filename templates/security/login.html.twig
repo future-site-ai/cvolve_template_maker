@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+{% block title %}Log in{% endblock %}
+{% block container_class %}container-narrow{% endblock %}
+{% block body %}
+    <div class="card">
+        <h1>Log in</h1>
+        {% if error %}<div class="alert alert-error" style="margin-bottom:14px">{{ error.messageKey|trans(error.messageData, 'security') }}</div>{% endif %}
+        <form method="post">
+            <div class="form-row"><label for="email">Email</label><input type="email" value="{{ last_username }}" name="email" id="email" autocomplete="email" required autofocus></div>
+            <div class="form-row"><label for="password">Password</label><input type="password" name="password" id="password" autocomplete="current-password" required></div>
+            <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+            <label class="checkbox-row" style="margin-bottom:16px"><input type="checkbox" name="_remember_me"> <span>Remember me</span></label>
+            <button class="btn btn-primary btn-block" type="submit">Log in</button>
+        </form>
+        <hr>
+        <p class="small muted" style="margin:0">New here? <a href="{{ path('app_register') }}">Create a designer account</a></p>
+    </div>
+{% endblock %}

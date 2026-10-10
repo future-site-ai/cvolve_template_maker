@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+{% block title %}Revisions · {{ project.name }}{% endblock %}
+{% block body %}
+    <div class="page-head">
+        <div><h1>Revisions</h1><p>{{ project.name }}. A revision is saved on creation, before every applied AI change and before restores.</p></div>
+        <a class="btn" href="{{ path('project_editor', {id: project.id}) }}">Back to editor</a>
+    </div>
+    <form method="post" action="{{ path('project_action', {id: project.id, action: 'snapshot'}) }}" class="card row" style="margin-bottom:16px">
+        <input type="hidden" name="_token" value="{{ csrf_token('project-' ~ project.id) }}">
+        <input type="text" name="label" placeholder="Name this revision" style="flex:1;min-width:200px">
+        <button class="btn btn-primary">Save current state</button>
+    </form>
+    <div class="card table-wrap">
+        <table class="table">
+            <thead><tr><th>Revision</th><th>Source</th><th>Saved</th><th></th></tr></thead>
+            <tbody>
+                {% for r in revisions %}
+                    <tr>
+                        <td><strong>{{ r.label }}</strong></td>
+                        <td><span class="badge">{{ r.source }}</span></td>
+                        <td class="muted nowrap">{{ r.createdAt|date('d M Y H:i') }}</td>
+                        <td style="text-align:right">
+                            <form method="post" action="{{ path('project_revision_restore', {id: r.id}) }}" class="inline" onsubmit="return confirm('Restore this revision? The current state is saved first.')">
+                                <input type="hidden" name="_token" value="{{ csrf_token('project-' ~ project.id) }}">
+                                <button class="btn btn-sm">Restore</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

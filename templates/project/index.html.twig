@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+{% block title %}My templates{% endblock %}
+{% block body %}
+    <div class="page-head">
+        <div><h1>My templates</h1><p>Design here, export a <code>.cvolve</code> file, and install it in CVolve (Templates → Import).</p></div>
+    </div>
+
+    {% if not has_ai %}
+        <div class="alert alert-info" style="margin-bottom:18px">Connect your own AI provider (Claude, ChatGPT, Gemini…) under <a href="{{ path('ai_index') }}">AI connections</a> to generate templates, convert finished HTML CVs and use the design assistant.</div>
+    {% endif %}
+
+    <h2>Start a new template</h2>
+    <div class="start-grid" style="margin-bottom:28px">
+        <form method="post" action="{{ path('project_new') }}" class="card start-card">
+            <input type="hidden" name="_token" value="{{ csrf_token('project-new') }}">
+            <h3>🧩 Blank (Mustache HTML)</h3>
+            <p>Plain HTML with <code>{{ '{{placeholders}}' }}</code>. Easiest if you know HTML and CSS.</p>
+            <input type="text" name="name" placeholder="Template name">
+            <input type="hidden" name="syntax" value="mustache">
+            <button class="btn btn-primary btn-sm">Create</button>
+        </form>
+        <form method="post" action="{{ path('project_new') }}" class="card start-card">
+            <input type="hidden" name="_token" value="{{ csrf_token('project-new') }}">
+            <h3>🧱 Blank (Twig)</h3>
+            <p>Full power: macros, filters, conditions. The native CVolve format.</p>
+            <input type="text" name="name" placeholder="Template name">
+            <input type="hidden" name="syntax" value="twig">
+            <button class="btn btn-primary btn-sm">Create</button>
+        </form>
+        <a class="card card-link start-card" href="{{ path('project_import') }}">
+            <h3>📥 Import</h3>
+            <p>.cvolve, HTML with placeholders, Twig, JSON Resume theme, HTML zip, or a finished HTML CV (converted by AI).</p>
+            <span class="btn btn-sm">Import a file</span>
+        </a>
+        <a class="card card-link start-card" href="{{ path('project_generate') }}">
+            <h3>✨ Generate with AI</h3>
+            <p>Describe the style you want; your AI connection writes a complete template you can refine.</p>
+            <span class="btn btn-sm">Describe a design</span>
+        </a>
+        <details class="card start-card">
+            <summary style="cursor:pointer;list-style:none"><h3>📚 Copy a preset</h3><p>Start from one of CVolve's bundled templates.</p></summary>
+            {% for slug, preset in presets %}
+                <form method="post" action="{{ path('project_new') }}" class="row" style="margin-top:8px">
+                    <input type="hidden" name="_token" value="{{ csrf_token('project-new') }}">
+                    <input type="hidden" name="preset" value="{{ slug }}">
+                    <span style="flex:1">{{ preset.name }}</span>
+                    <button class="btn btn-sm">Copy</button>
+                </form>
+            {% endfor %}
+        </details>
+    </div>
+
+    <h2>Your templates</h2>
+    {% if projects is empty %}
+        <div class="card empty"><p>No templates yet. Pick a starting point above.</p></div>
+    {% else %}
+        <div class="grid grid-3">
+            {% for project in projects %}
+                <a class="card card-link template-card" href="{{ path('project_editor', {id: project.id}) }}" style="padding:0">
+                    <div class="thumb">
+                        {% if project.asset('thumbnail.png') %}<img src="{{ path('project_thumbnail', {id: project.id}) }}?v={{ project.updatedAt.timestamp }}" alt="" loading="lazy">{% else %}No thumbnail yet{% endif %}
+                    </div>
+                    <div class="template-body" style="padding:12px 14px">
+                        <div class="row"><strong style="flex:1">{{ project.name }}</strong><span class="badge">{{ project.syntax }}</span></div>
+                        <div class="small muted">{{ project.origin }} · updated {{ project.updatedAt|date('d M Y H:i') }}</div>
+                        {% if project.valid %}<span class="badge badge-success">valid</span>{% else %}<span class="badge badge-danger">{{ project.errors|length }} problem{{ project.errors|length > 1 ? 's' }}</span>{% endif %}
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

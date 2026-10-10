@@ -1,0 +1,9 @@
+# Local development: only PostgreSQL (port 5433) and Gotenberg (port 3001); run PHP on the host.
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d database gotenberg
+services:
+  database:
+    ports:
+      - "5433:5432"
+  gotenberg:
+    ports:
+      - "3001:3000"

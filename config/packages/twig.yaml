@@ -1,0 +1,9 @@
+twig:
+    file_name_pattern: '*.twig'
+    form_themes: ['form/theme.html.twig']
+    globals:
+        app_name: CVolve Template Maker
+
+when@test:
+    twig:
+        strict_variables: true

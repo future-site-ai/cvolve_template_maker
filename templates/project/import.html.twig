@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+{% block title %}Import a template{% endblock %}
+{% block body %}
+    <div class="page-head">
+        <div><h1>Import a template</h1><p>Everything is converted into a sandboxed CVolve template and validated. You can edit it afterwards.</p></div>
+        <a class="btn" href="{{ path('project_index') }}">Back</a>
+    </div>
+    {% if errors %}
+        <div class="alert alert-error" style="margin-bottom:16px"><strong>The import failed:</strong><ul style="margin:6px 0 0;padding-left:18px">{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul></div>
+    {% endif %}
+    {% if warnings %}
+        <div class="alert alert-warning" style="margin-bottom:16px"><ul style="margin:0;padding-left:18px">{% for w in warnings %}<li>{{ w }}</li>{% endfor %}</ul></div>
+    {% endif %}
+    <form method="post" enctype="multipart/form-data" class="card stack" data-controller="busy" data-action="submit->busy#start">
+        <input type="hidden" name="_token" value="{{ csrf_token('project-import') }}">
+        <div class="fields">
+            <div class="field field-wide"><label>File</label><input type="file" name="file" accept=".cvolve,.zip,.html,.htm,.twig,.mustache,.hbs,.handlebars,.template"></div>
+            <div class="field field-wide"><label>…or paste HTML</label><textarea name="html" rows="8" placeholder="<html>…</html>"></textarea></div>
+            <div class="field"><label>Name (optional)</label><input type="text" name="name" placeholder="Detected from the file"></div>
+            <div class="field"><label>AI for finished HTML CVs</label>{{ include('project/_connection_select.html.twig', {allow_none: false}) }}</div>
+        </div>
+        <p class="form-help">AI is only used when the HTML has no placeholders. Converting a page usually takes 20–90 seconds.</p>
+        <div class="form-actions"><button class="btn btn-primary" data-busy-target="button">Import</button></div>
+    </form>
+    <div class="card" style="margin-top:16px">
+        <h2>Supported formats</h2>
+        <table class="table">
+            <tr><td><strong>.cvolve</strong></td><td>A native package exported from CVolve or this maker.</td></tr>
+            <tr><td><strong>HTML + Mustache</strong></td><td>One file: <code>{{ '{{header.name}}' }}</code>, <code>{{ '{{#regions.main}}…{{/regions.main}}' }}</code>. Stays editable in Mustache.</td></tr>
+            <tr><td><strong>Twig HTML</strong></td><td><code>.html</code>/<code>.twig</code> using CVolve's Twig variables.</td></tr>
+            <tr><td><strong>JSON Resume theme</strong></td><td>The theme's npm package as a zip (Handlebars or Mustache template + CSS).</td></tr>
+            <tr><td><strong>HTML zip</strong></td><td><code>index.html</code> + CSS files + <code>fonts/</code>.</td></tr>
+            <tr><td><strong>Finished HTML CV</strong></td><td>A static CV page: your AI connection turns it into a template.</td></tr>
+        </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+{% block title %}Template guide{% endblock %}
+{% block body %}
+<div class="doc" style="max-width:860px">
+    <h1>Template guide</h1>
+    <p>A CVolve template turns a CV's content into a print-ready A4 page. Content and design are separate: CVolve users (and their AI assistant) change the words; your template decides how everything looks.</p>
+
+    <h2>Two ways to write markup</h2>
+    <table class="table">
+        <tr><th>Mustache (“CVolve HTML”)</th><th>Twig</th></tr>
+        <tr><td><code>{{ '{{header.name}}' }}</code></td><td><code>{{ '{{ header.name }}' }}</code></td></tr>
+        <tr><td><code>{{ '{{{text}}}' }}</code> (bold/italic)</td><td><code>{{ '{{ s.text|md }}' }}</code></td></tr>
+        <tr><td><code>{{ '{{#regions.main}}…{{/regions.main}}' }}</code></td><td><code>{{ '{% for s in regions.main %}…{% endfor %}' }}</code></td></tr>
+        <tr><td><code>{{ '{{#is_experience}}…{{/is_experience}}' }}</code></td><td><code>{{ "{% if s.type == 'experience' %}…{% endif %}" }}</code></td></tr>
+        <tr><td><code>{{ '{{^items}}empty{{/items}}' }}</code></td><td><code>{{ '{% if not s.items %}empty{% endif %}' }}</code></td></tr>
+        <tr><td><code>{{ '{{#bullets}}<li>{{{.}}}</li>{{/bullets}}' }}</code></td><td><code>{{ '{% for b in item.bullets %}<li>{{ b|md }}</li>{% endfor %}' }}</code></td></tr>
+    </table>
+    <p>Mustache is easiest for HTML designers; Twig offers macros, filters and conditions. Switch per project in the editor toolbar. In Mustache, names are looked up from the innermost block outwards. Prefer <code>heading</code>/<code>subheading</code> on entries so a name never accidentally resolves to the section title.</p>
+
+    <h2>Files</h2>
+    <ul>
+        <li><strong>template</strong>: markup for the content of <code>&lt;body&gt;</code>.</li>
+        <li><strong>style.css</strong>: print CSS. Start with <code>@page { size: A4; margin: 0; }</code> and pad your page instead. No <code>@import</code> or remote URLs: upload font files (Assets) and use their family names.</li>
+        <li><strong>schema.json</strong>: regions (columns) and the section types you support, with optional limits <code>maxLength</code>, <code>maxItems</code>, <code>maxBullets</code> that CVolve's editor and AI respect.</li>
+        <li><strong>manifest.json</strong>: name, slug, version, author, licence, description, fonts, and DOCX colours.</li>
+    </ul>
+
+    <h2>Testing</h2>
+    <p>Preview with the <em>Typical</em>, <em>Long</em> (page breaks) and <em>Minimal</em> sample CVs, in several languages (including right-to-left Arabic). Use <em>PDF</em> for the exact Chromium output. The Problems panel shows validation errors; only valid templates can be exported.</p>
+
+    <h2>Importing</h2>
+    <p>Import a <code>.cvolve</code> package, an HTML file with Mustache placeholders or Twig, a JSON Resume theme (zip with a Handlebars/Mustache template), a zip with <code>index.html</code> + CSS + fonts, or a finished static HTML CV. The last one is converted by your AI connection. Scripts, event handlers and remote resources are removed.</p>
+
+    <h2>Full contract (also given to AI models)</h2>
+    <pre style="white-space:pre-wrap">{{ contract }}</pre>
+</div>
+{% endblock %}

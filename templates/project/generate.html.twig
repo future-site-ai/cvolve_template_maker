@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+{% block title %}Generate with AI{% endblock %}
+{% block body %}
+    <div class="page-head">
+        <div><h1>Generate a template with AI</h1><p>Describe the design. Your AI connection writes the markup, CSS and schema; the result is validated and you can keep refining it in the chat.</p></div>
+        <a class="btn" href="{{ path('project_index') }}">Back</a>
+    </div>
+    {% if errors %}
+        <div class="alert alert-error" style="margin-bottom:16px">{% for e in errors %}<div>{{ e }}</div>{% endfor %}</div>
+    {% endif %}
+    <form method="post" class="card stack" data-controller="busy" data-action="submit->busy#start">
+        <input type="hidden" name="_token" value="{{ csrf_token('project-generate') }}">
+        <div class="fields">
+            <div class="field"><label>Template name</label><input type="text" name="name" placeholder="e.g. Nordic Minimal"></div>
+            <div class="field"><label>AI connection</label>{{ include('project/_connection_select.html.twig') }}</div>
+            <div class="field field-wide"><label>Design brief</label>
+                <textarea name="brief" rows="8" required placeholder="Two columns. Narrow left sidebar in deep navy with the photo, contact, skills and languages. Main column with a thin teal rule under each heading, compact experience entries with dates aligned right. Modern sans-serif, generous whitespace, fits two pages.">{{ brief }}</textarea>
+            </div>
+        </div>
+        <div class="chat-suggestions">
+            {% for idea in ['Classic one-column serif CV for academia, centred name, no colour except dark red headings', 'Bold creative CV with a full-width coloured header band and skill chips', 'Ultra-compact one-page CV for senior engineers, small caps headings, two columns', 'Elegant minimal CV with lots of whitespace and a thin timeline line next to experience'] %}
+                <button type="button" class="btn btn-sm" onclick="this.form.brief.value=this.textContent">{{ idea }}</button>
+            {% endfor %}
+        </div>
+        <div class="form-actions"><button class="btn btn-primary" data-busy-target="button" {{ connections ? '' : 'disabled' }}>Generate</button></div>
+    </form>
+{% endblock %}

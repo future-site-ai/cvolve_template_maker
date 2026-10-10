@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+{% block title %}Sign up{% endblock %}
+{% block container_class %}container-narrow{% endblock %}
+{% block body %}
+    <div class="card">
+        <h1>Create a designer account</h1>
+        {% if errors %}<div class="alert alert-error" style="margin-bottom:14px">{% for e in errors %}<div>{{ e }}</div>{% endfor %}</div>{% endif %}
+        <form method="post">
+            <input type="hidden" name="_token" value="{{ csrf_token('register') }}">
+            <div class="form-row"><label for="name">Name</label><input type="text" name="name" id="name" value="{{ values.name }}" required autocomplete="name"></div>
+            <div class="form-row"><label for="email">Email</label><input type="email" name="email" id="email" value="{{ values.email }}" required autocomplete="email"></div>
+            <div class="form-row"><label for="password">Password</label><input type="password" name="password" id="password" minlength="8" required autocomplete="new-password"></div>
+            <button class="btn btn-primary btn-block">Create account</button>
+        </form>
+    </div>
+{% endblock %}

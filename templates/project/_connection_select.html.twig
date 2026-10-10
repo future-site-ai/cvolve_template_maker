@@ -1,0 +1,8 @@
+{% if connections %}
+    <select name="connection" style="width:auto">
+        {% if allow_none|default(false) %}<option value="-1">No AI (placeholders only)</option>{% endif %}
+        {% for c in connections %}<option value="{{ c.id }}" {{ loop.first and not allow_none|default(false) ? 'selected' }}>{{ c.label }} · {{ c.model }}</option>{% endfor %}
+    </select>
+{% else %}
+    <span class="small muted">No AI connection. <a href="{{ path('ai_new') }}">Add one</a></span>
+{% endif %}

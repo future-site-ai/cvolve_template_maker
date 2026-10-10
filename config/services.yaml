@@ -1,0 +1,20 @@
+parameters:
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    # Shared template engine from CVolve (packages/template-kit)
+    Cvolve\TemplateKit\:
+        resource: '../vendor/future-site/cvolve-template-kit/src/'
+        exclude:
+            - '../vendor/future-site/cvolve-template-kit/src/**/*Exception.php'
+            - '../vendor/future-site/cvolve-template-kit/src/Package/TemplatePackage.php'
+            - '../vendor/future-site/cvolve-template-kit/src/Import/ImportResult.php'
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/Entity/'
+            - '../src/Kernel.php'

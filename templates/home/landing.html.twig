@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+{% block title %}Design CV templates{% endblock %}
+{% block main %}
+    <section class="hero">
+        <span class="badge badge-primary">For designers · Open source</span>
+        <h1 style="margin-top:14px">Design CV templates for CVolve.<br>Code it, import it, or let your AI draft it.</h1>
+        <p>Write HTML with simple placeholders or Twig, see a live A4 preview with realistic sample CVs, and export a <code>.cvolve</code> package that installs in any CVolve instance.</p>
+        <div class="row" style="justify-content:center;margin-top:22px">
+            <a class="btn btn-primary" href="{{ path('app_register') }}">Start designing</a>
+            <a class="btn" href="{{ path('app_docs') }}">Read the template guide</a>
+        </div>
+    </section>
+    <section class="features">
+        <div class="card feature"><h3>✍️ Code + live preview</h3><p class="muted">Edit markup, CSS, schema and manifest with instant A4 preview, page-break guides and exact PDF rendering.</p></div>
+        <div class="card feature"><h3>📥 Import anything</h3><p class="muted">Bring HTML with Mustache placeholders, Twig, JSON Resume themes, HTML zips, or a finished HTML CV that AI converts.</p></div>
+        <div class="card feature"><h3>🤖 Your AI, your key</h3><p class="muted">Connect Claude, ChatGPT, Gemini, Mistral, Ollama or any OpenAI-compatible API. Generate from a brief, or ask for changes and review the diff.</p></div>
+        <div class="card feature"><h3>✅ Validated output</h3><p class="muted">The same sandbox and validator as CVolve: if it passes here, it installs there.</p></div>
+    </section>
+{% endblock %}

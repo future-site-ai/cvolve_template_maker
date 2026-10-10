@@ -1,0 +1,95 @@
+{% use 'form_div_layout.html.twig' %}
+
+{% block form_row %}
+    {%- set row_attr = row_attr|merge({class: (row_attr.class ?? 'form-row')}) -%}
+    <div{% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}>
+        {{- form_label(form) -}}
+        {{- form_widget(form) -}}
+        {{- form_help(form) -}}
+        {{- form_errors(form) -}}
+    </div>
+{% endblock %}
+
+{% block checkbox_row %}
+    {%- set row_attr = row_attr|merge({class: ((row_attr.class ?? '') ~ ' form-row')|trim}) -%}
+    <div{% with {attr: row_attr} %}{{ block('attributes') }}{% endwith %}>
+        <div class="checkbox-row">{{ form_widget(form) }}{{ form_label(form) }}</div>
+        {{- form_help(form) -}}
+        {{- form_errors(form) -}}
+    </div>
+{% endblock %}
+
+{% block form_help %}
+    {%- if help is not empty -%}<div class="form-help">{{ help|trans(help_translation_parameters, translation_domain) }}</div>{%- endif -%}
+{% endblock %}
+
+{% block form_errors %}
+    {%- if errors|length > 0 -%}
+        <div class="form-errors">{% for error in errors %}<div>{{ error.message }}</div>{% endfor %}</div>
+    {%- endif -%}
+{% endblock %}
+
+{# Expanded choices as a list of checkbox/radio rows #}
+{% block choice_widget_expanded %}
+    <div {{ block('widget_container_attributes') }} class="choice-list {{ attr.class ?? '' }}">
+        {%- for child in form %}
+            <div class="checkbox-row">{{ form_widget(child) }}{{ form_label(child, null, {translation_domain: choice_translation_domain}) }}</div>
+        {% endfor -%}
+    </div>
+{% endblock %}
+
+{# Template picker on "New CV": radio cards with thumbnails #}
+{% block template_picker_widget %}
+    <div class="grid grid-3">
+        {% for child in form %}
+            {% set template = form.vars.choices[child.vars.name].data %}
+            <label class="card template-card" style="cursor:pointer">
+                <div class="template-thumb">
+                    <img src="{{ path('template_thumbnail', {id: template.id}) }}" alt="" loading="lazy" onerror="this.remove()">
+                </div>
+                <div class="template-body">
+                    <div class="checkbox-row">{{ form_widget(child) }}<strong>{{ template.name }}</strong></div>
+                    <p>{{ template.description }}</p>
+                </div>
+            </label>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{# Sortable collections (see CollectionOptions and collection_controller.js) #}
+{% block cv_collection_row %}
+    <div class="form-row field-wide">
+        {% if label is not same as(false) %}<div class="collection-label">{{ label }}</div>{% endif %}
+        {{ form_widget(form) }}
+        {{ form_errors(form) }}
+    </div>
+{% endblock %}
+
+{% block cv_collection_widget %}
+    <div class="collection" data-controller="collection" data-collection-prototype-name-value="{{ attr['data-prototype-name'] }}">
+        <div class="collection-items" data-collection-target="items">
+            {% for child in form %}{{ form_row(child) }}{% endfor %}
+        </div>
+        {% if prototype is defined %}
+            <template data-collection-target="prototype">{{ form_row(prototype) }}</template>
+        {% endif %}
+        <button type="button" class="btn btn-sm" data-action="collection#add">+ Add {{ attr['data-add-label']|lower }}</button>
+    </div>
+{% endblock %}
+
+{% block cv_collection_entry_row %}
+    <div class="collection-item" data-collection-item>
+        <div class="collection-item-tools">
+            <button type="button" class="btn btn-ghost btn-icon btn-sm" data-action="collection#up" title="Move up">↑</button>
+            <button type="button" class="btn btn-ghost btn-icon btn-sm" data-action="collection#down" title="Move down">↓</button>
+            <button type="button" class="btn btn-ghost btn-icon btn-sm btn-danger" data-action="collection#remove" title="Remove">✕</button>
+        </div>
+        {{ form_errors(form) }}
+        <div class="fields">
+            {% for child in form %}
+                {% if 'hidden' not in child.vars.block_prefixes %}{{ form_row(child) }}{% endif %}
+            {% endfor %}
+        </div>
+        {% for child in form %}{% if 'hidden' in child.vars.block_prefixes %}{{ form_widget(child) }}{% endif %}{% endfor %}
+    </div>
+{% endblock %}

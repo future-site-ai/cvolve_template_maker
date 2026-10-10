@@ -1,0 +1,5 @@
+# The maker has no background jobs: everything runs synchronously.
+framework:
+    messenger:
+        transports:
+            async: '%env(MESSENGER_TRANSPORT_DSN)%'

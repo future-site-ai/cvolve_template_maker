@@ -1,0 +1,33 @@
+{% if message.role == 'user' %}
+    <div class="chat-msg user">{{ message.content }}</div>
+{% else %}
+    <div class="chat-msg assistant" id="message-{{ message.id }}">
+        <div>{{ message.content|nl2br }}</div>
+        {% if message.changes %}
+            <div class="change">
+                <div class="change-head">
+                    <strong style="flex:1">{{ message.changes|keys|map(k => {template: 'template', css: 'style.css', schema: 'schema.json', manifest: 'manifest.json'}[k] ?? k)|join(', ') }}</strong>
+                    {% if message.status == 'applied' %}<span class="badge badge-success">Applied</span>
+                    {% elseif message.status == 'discarded' %}<span class="badge">Discarded</span>
+                    {% else %}<span class="badge badge-primary">Review</span>{% endif %}
+                </div>
+                {% if message.pending %}
+                    {% if message.errors %}
+                        <div class="alert alert-warning" style="margin:6px;font-size:12px">Still has problems: {{ message.errors|join(' ') }}</div>
+                    {% endif %}
+                    <div class="change-body">
+                        {% for file in diff %}
+                            <div class="diff-file">{{ file.file }}</div>
+                            <div class="diff">{% for row in file.diff|diff_compact %}<div class="{{ row.type }}">{{ row.line ?: ' ' }}</div>{% endfor %}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="change-actions">
+                        <button type="button" class="btn btn-primary btn-sm" data-action="design-chat#resolve" data-url="{{ path('project_chat_resolve', {id: message.id, action: 'apply'}) }}">Apply</button>
+                        <button type="button" class="btn btn-sm" data-action="design-chat#resolve" data-url="{{ path('project_chat_resolve', {id: message.id, action: 'discard'}) }}">Discard</button>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+        {% if message.model %}<div class="meta">{{ message.model }}</div>{% endif %}
+    </div>
+{% endif %}

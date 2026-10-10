@@ -1,0 +1,120 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ project.name }}{% endblock %}
+{% block main %}
+{% set token = csrf_token('project-' ~ project.id) %}
+<div class="studio with-chat"
+     data-controller="studio"
+     data-studio-save-url-value="{{ path('project_save', {id: project.id}) }}"
+     data-studio-files-url-value="{{ path('project_files', {id: project.id}) }}"
+     data-studio-preview-url-value="{{ path('project_preview', {id: project.id}) }}"
+     data-studio-token-value="{{ token }}"
+     data-studio-syntax-value="{{ project.syntax }}">
+
+    <script type="application/json" data-studio-target="initial">{{ files|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP') b-or constant('JSON_HEX_APOS') b-or constant('JSON_HEX_QUOT'))|raw }}</script>
+
+    {# ------------------------------- code ------------------------------- #}
+    <section class="studio-pane studio-code">
+        <div class="toolbar">
+            <span class="title" data-studio-target="title" title="{{ project.name }}">{{ project.name }}</span>
+            <select class="btn btn-sm" style="width:auto" data-studio-target="syntax" data-action="studio#changeSyntax" title="Markup syntax">
+                <option value="mustache" {{ project.syntax == 'mustache' ? 'selected' }}>Mustache HTML</option>
+                <option value="twig" {{ project.syntax == 'twig' ? 'selected' }}>Twig</option>
+            </select>
+            <span class="spacer"></span>
+            <span class="save-state" data-studio-target="state">Saved</span>
+            <button class="btn btn-sm" data-action="studio#save" title="Ctrl/Cmd+S">Save</button>
+            <details class="menu">
+                <summary class="btn btn-sm">Assets</summary>
+                <div class="menu-panel">
+                    <ul class="asset-list">
+                        {% for asset in project.assets %}
+                            <li><code title="{{ asset.path }}">{{ asset.path }}</code><span class="small muted">{{ (asset.size / 1024)|round }} KB</span>
+                                <form method="post" action="{{ path('project_asset_delete', {id: project.id}) }}" class="inline"><input type="hidden" name="_token" value="{{ token }}"><input type="hidden" name="path" value="{{ asset.path }}"><button class="btn btn-ghost btn-icon btn-sm btn-danger" title="Remove">✕</button></form>
+                            </li>
+                        {% else %}
+                            <li class="muted">No fonts or thumbnail yet.</li>
+                        {% endfor %}
+                    </ul>
+                    <form method="post" action="{{ path('project_asset_upload', {id: project.id}) }}" enctype="multipart/form-data" class="stack">
+                        <input type="hidden" name="_token" value="{{ token }}">
+                        <input type="file" name="assets[]" multiple accept=".woff2,.woff,.ttf,.otf,.png,.jpg,.jpeg">
+                        <p class="form-help">Fonts (woff2, woff, ttf, otf) are declared in manifest.json automatically. A PNG/JPG becomes the gallery thumbnail.</p>
+                        <button class="btn btn-sm btn-primary">Upload</button>
+                    </form>
+                    <hr style="margin:10px 0">
+                    <form method="post" action="{{ path('project_action', {id: project.id, action: 'thumbnail'}) }}"><input type="hidden" name="_token" value="{{ token }}"><button class="btn btn-ghost btn-sm">Render thumbnail from preview</button></form>
+                </div>
+            </details>
+        </div>
+        <div class="file-tabs" role="tablist">
+            {% for key, label in {template: 'template', css: 'style.css', schema: 'schema.json', manifest: 'manifest.json'} %}
+                <button type="button" role="tab" data-studio-target="tab" data-file="{{ key }}" data-action="studio#switch" class="{{ loop.first ? 'active' }}">{{ key == 'template' ? (project.syntax == 'mustache' ? 'template.html' : 'template.html.twig') : label }}</button>
+            {% endfor %}
+        </div>
+        <div class="code-host" data-studio-target="editor"></div>
+        <div class="problems">
+            <div class="problems-head"><span data-studio-target="problemCount">Problems</span></div>
+            <div data-studio-target="problems">
+                {% if project.errors %}<ul>{% for e in project.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% else %}<div class="ok">✓ Valid template: ready to export.</div>{% endif %}
+            </div>
+        </div>
+    </section>
+
+    {# ------------------------------- preview ------------------------------- #}
+    <section class="studio-pane studio-preview">
+        <div class="toolbar">
+            <select class="btn btn-sm" style="width:auto" data-studio-target="sample" data-action="studio#refresh" title="Sample CV">
+                {% for key, label in samples %}<option value="{{ key }}">{{ label }}</option>{% endfor %}
+            </select>
+            <select class="btn btn-sm" style="width:auto" data-studio-target="locale" data-action="studio#refresh" title="Language of fixed labels">
+                {% for code, name in locales %}<option value="{{ code }}">{{ name }}</option>{% endfor %}
+            </select>
+            <select class="btn btn-sm" style="width:auto" data-studio-target="zoom" data-action="studio#zoom" title="Zoom">
+                <option value="fit" selected>Fit</option><option value="0.5">50%</option><option value="0.75">75%</option><option value="1">100%</option>
+            </select>
+            <span class="spacer"></span>
+            <a class="btn btn-sm" data-studio-target="pdfLink" href="{{ path('project_pdf', {id: project.id}) }}" target="_blank" rel="noopener">PDF</a>
+            <details class="menu">
+                <summary class="btn btn-sm">⋯</summary>
+                <div class="menu-panel">
+                    <a class="btn btn-ghost btn-sm" href="{{ path('project_revisions', {id: project.id}) }}">Revisions</a>
+                    <form method="post" action="{{ path('project_action', {id: project.id, action: 'duplicate'}) }}"><input type="hidden" name="_token" value="{{ token }}"><button class="btn btn-ghost btn-sm">Duplicate</button></form>
+                    <form method="post" action="{{ path('project_action', {id: project.id, action: 'delete'}) }}" onsubmit="return confirm('Delete this template project?')"><input type="hidden" name="_token" value="{{ token }}"><button class="btn btn-ghost btn-sm btn-danger">Delete</button></form>
+                </div>
+            </details>
+            <a class="btn btn-sm btn-primary" href="{{ path('project_export', {id: project.id}) }}" data-turbo="false" data-studio-target="export">Export .cvolve</a>
+        </div>
+        <div class="preview-wrap">
+            <span class="preview-loading" data-studio-target="spinner" hidden><span class="spinner"></span></span>
+            <iframe class="preview-frame" data-studio-target="frame" sandbox="allow-same-origin" title="Template preview" src="{{ path('project_preview', {id: project.id}) }}"></iframe>
+        </div>
+    </section>
+
+    {# ------------------------------- AI chat ------------------------------- #}
+    <aside class="studio-pane studio-chat" data-controller="design-chat"
+           data-design-chat-url-value="{{ path('project_chat', {id: project.id}) }}"
+           data-design-chat-token-value="{{ token }}">
+        <div class="chat-head">
+            <h2>✨ Design assistant</h2>
+            {{ include('project/_connection_select.html.twig') }}
+        </div>
+        <div class="chat-log" data-design-chat-target="log">
+            {% if messages is empty %}
+                <div class="chat-empty" data-design-chat-target="empty">
+                    <p class="small">Ask your AI to change the template. Each answer comes with a diff to <strong>Apply</strong> or <strong>Discard</strong>; a revision is saved before applying.</p>
+                    <div class="chat-suggestions">
+                        {% for s in ['Make it two columns with a dark sidebar for contact, skills and languages', 'Use a teal accent colour and add a thin rule under each heading', 'Show the photo as a rounded square next to the name', 'Make the experience entries more compact so the long sample fits on fewer pages', 'Add a timeline line to the left of the experience entries'] %}
+                            <button type="button" class="btn btn-sm" data-action="design-chat#suggest" data-text="{{ s }}">{{ s }}</button>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            {% for message in messages %}{{ include('project/_message.html.twig', {message: message, diff: message.pending ? chat_diff(message) : []}) }}{% endfor %}
+        </div>
+        <form class="chat-form" data-action="submit->design-chat#send">
+            <textarea data-design-chat-target="input" data-action="keydown->design-chat#keydown" rows="3" placeholder="e.g. Move languages to the sidebar and use small caps headings" {{ connections ? '' : 'disabled' }}></textarea>
+            <div class="row"><span class="small muted">Enter to send · Shift+Enter for a new line</span><span class="spacer"></span><button class="btn btn-primary btn-sm" data-design-chat-target="send" {{ connections ? '' : 'disabled' }}>Send</button></div>
+        </form>
+    </aside>
+</div>
+{% endblock %}
