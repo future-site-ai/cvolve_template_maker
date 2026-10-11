@@ -89,6 +89,7 @@ The [CVolve README](https://github.com/future-site-ai/cvolve#template-formats-cv
 composer install                      # links ../cvolve/packages/template-kit
 make local-deps                       # PostgreSQL :5433, Gotenberg :3001
 cat > .env.local <<'ENV'
+APP_SECRET=change_me_to_a_random_32_char_hex
 DATABASE_URL="postgresql://maker:maker@127.0.0.1:5433/maker?serverVersion=16&charset=utf8"
 GOTENBERG_URL=http://127.0.0.1:3001
 MAKER_ENCRYPTION_KEY=some-long-random-dev-key
